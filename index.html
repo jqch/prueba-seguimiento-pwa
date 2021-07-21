@@ -40,43 +40,140 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div id="my-app">
+    <v-app>
+    <v-main>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Proyectos Proyectos</a>
+        <a class="navbar-brand" href="#">Seguimiento Proyectos</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Features</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Pricing</a>
-            </li>
-          </ul>
-          <span class="navbar-text">
-            Navbar text with an inline element
-          </span>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" @click="changePage('SIGEP')">SIGEP</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" @click="changePage('SISIN')">SISIN</a>
+                </li>
+            </ul>
+            <span class="navbar-text">
+                Usuario
+            </span>
         </div>
-      </nav>
-    <div class="container p-3" id="my-app">
-        <v-app>
-        <v-main>
-            
-            <div v-show="loading" id="overlayer"></div>
-            <div v-show="loading" class="spinner">
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
+    </nav>
+
+    <div class="container-fluid p-3">
+        <div v-show="loading" id="overlayer"></div>
+        <div v-show="loading" class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+        </div>
+
+        <h5>Proyectos %% page %%</h5>
+
+        <div v-show="page == 'SIGEP'">
+            <div class="row">
+                <div class="col-md-6">
+                    <v-select
+                        v-model="dependencia"
+                        :items="dependencias"
+                        item-text="nombre"
+                        item-value="itemId"
+                        chips
+                        label="Entidad"
+                        multiple
+                    ></v-select>
+                </div>
+                <!-- <div class="col-md-6">
+                    <v-select
+                        v-model="value"
+                        :items="items"
+                        attach
+                        chips
+                        label="Tipo de recurso"
+                        multiple
+                    ></v-select>
+                </div> -->
             </div>
 
-            <h3>Seguimiento</h3>
-        
+            <v-card>
+                <h5 class="text-header">General</h5>
+                <small>
+                    <div id="chartdivgeneral1" class="chartam"></div>
+                </small>
+                <v-card-title>
+                    <v-text-field
+                    v-model="searchGeneral"
+                    append-icon="mdi-magnify"
+                    label="Buscar"
+                    single-line
+                    hide-details
+                    ></v-text-field>
+                </v-card-title>
+                <v-data-table
+                    :headers="headersGeneral"
+                    :items="general"
+                    :search="searchGeneral"
+                    dense
+                ></v-data-table>
+            </v-card>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <v-card>
+                        <h5 class="text-header">Capital</h5>
+                        <small>
+                            <div id="chartdivcapital1" class="chartam"></div>
+                        </small>
+                        <v-card-title>
+                            <v-text-field
+                            v-model="searchGeneral"
+                            append-icon="mdi-magnify"
+                            label="Buscar"
+                            single-line
+                            hide-details
+                            ></v-text-field>
+                        </v-card-title>
+                        <v-data-table
+                            :headers="headersGeneral"
+                            :items="capital"
+                            :search="searchCapital"
+                            dense
+                        ></v-data-table>
+                    </v-card>
+                </div>
+                <div class="col-md-6">
+                    <v-card>
+                        <h5 class="text-header">Corriente</h5>
+                        <small>
+                            <div id="chartdivcorriente1" class="chartam"></div>
+                        </small>
+                        <v-card-title>
+                            <v-text-field
+                            v-model="searchGeneral"
+                            append-icon="mdi-magnify"
+                            label="Buscar"
+                            single-line
+                            hide-details
+                            ></v-text-field>
+                        </v-card-title>
+                        <v-data-table
+                            :headers="headersGeneral"
+                            :items="corriente"
+                            :search="searchCorriente"
+                            dense
+                        ></v-data-table>
+                    </v-card>
+                </div>
+            </div>
+
+        </div>
+
+        <div v-show="page == 'SISIN'">
             <div class="row">
                 <div class="col-lg-4">
                     <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
@@ -105,8 +202,7 @@
                     </div>
                 </div>
             </div>
-        
-        
+            
             <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
                 <div class="m-portlet__head">
                     <div class="m-portlet__head-caption">
@@ -257,15 +353,20 @@
                     </div>
                 </div>
             </div>
-        </v-main>
-        </v-app>
+
+        </div>
+    </div>
+
+    </v-main>
+    </v-app>
     </div>
 
     <script src="js/index.js"></script>
 
     <script>
         if('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js', {scope: '/prueba-seguimiento-pwa/'})
+            // navigator.serviceWorker.register('sw.js', {scope: '/prueba-seguimiento-pwa/'})
+            navigator.serviceWorker.register('sw.js', {scope: './'})
                 .then(reg => console.log('Registro de SW exitoso', reg))
                 .catch(err => console.log('Error al registrar el sw', err))
         }

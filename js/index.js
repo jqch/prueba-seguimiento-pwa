@@ -1,4 +1,6 @@
+var sigepUrl = 'https://konga.mmaya.gob.bo:8443/dev/sigep/v1'
 var url = 'https://konga.mmaya.gob.bo:8443/dev/sisin/v1'
+
 var api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImlzcyI6Iml1ZjlYZURibjloamRWUHlYVmtIQXBhYUJLbGpnSHIwIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.0tP83tai3YKEocYHowjY5tGl_K60waaNt9YAmZNowxI';
 var tabla;
 
@@ -19,6 +21,28 @@ var vm = new Vue({
     delimiters: ['%%', '%%'],
     data: () => {
         return {
+            page: 'SIGEP',
+            title: 'Proyectos SIGEP',
+            dependencia: [],
+						dependencias: [],
+						montos: '',
+						general: [],
+						capital: [],
+						tcapital: [],
+						corriente: [],
+						tcorriente: [],
+						searchGeneral: '',
+						headersGeneral: [
+							{ text: '#', value: 'itemId' },
+							{ text: 'Dependencia', value: 'nombre' },
+							{ text: 'Inicial', value: 'inicial' },
+							{ text: 'Vigente', value: 'vigente' },
+							{ text: 'Devengado', value: 'devengado' },
+							{ text: 'Saldo', value: 'saldo' },
+							{ text: '%Ejec', value: 'ejec' },
+						],
+						searchCapital: '',
+						searchCorriente: '',
             cont: 0,
             headers: [],
             projects: [],
@@ -34,6 +58,9 @@ var vm = new Vue({
         }
     },
     async mounted(){
+			await this.getDependencias()
+			await this.getSigepMontos()
+
       await this.getDepartamentos()
       await this.getProjects()
       await this.getHeaders()
@@ -50,6 +77,81 @@ var vm = new Vue({
       },
     },
     methods: {
+			changePage(newPage) {
+				this.page = newPage
+			},
+			// SIGEP
+			async getDependencias() {
+				let response = await axios.get(`${sigepUrl}/dependencias`)
+        if(response.status === 200) {
+          this.dependencias = response.data.dependencia
+        }
+			},
+			async getSigepMontos() {
+				let response = await axios.get(`${sigepUrl}/montos`)
+        if(response.status === 200) {
+          this.montos = response.data
+					this.general = response.data.general
+					this.capital = response.data.capital
+					this.corriente = response.data.corriente
+
+					this.chartGeneral1('chartdivgeneral1', this.general)
+					this.chartGeneral1('chartdivcapital1', this.capital)
+					this.chartGeneral1('chartdivcorriente1', this.corriente)
+        }
+			},
+
+			chartGeneral1(div, datos) {
+				am4core.addLicense("ch-custom-attribution");
+				am4core.ready(function() {
+
+					// Themes begin
+					am4core.useTheme(am4themes_animated);
+					// Themes end
+					
+					// Create chart instance
+					var chart = am4core.create(div, am4charts.XYChart3D);
+					chart.responsive.enabled = true;
+
+					chart.data = datos
+					
+					// Create axes
+					var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+					categoryAxis.dataFields.category = "nombre";
+					categoryAxis.renderer.grid.template.location = 0;
+					categoryAxis.renderer.minGridDistance = 30;
+					categoryAxis.renderer.labels.template.rotation = 270;
+					categoryAxis.renderer.labels.template.hideOversized = false;
+          categoryAxis.renderer.labels.template.truncate = true;
+					categoryAxis.renderer.labels.template.maxWidth = 100;
+					
+					var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+					valueAxis.title.text = "Monto en Bs.";
+					valueAxis.renderer.labels.template.adapter.add("text", function(text) {
+						return text ;
+					});
+					
+					// Create series
+					var series = chart.series.push(new am4charts.ColumnSeries3D());
+					series.dataFields.valueY = "devengado";
+					series.dataFields.categoryX = "nombre";
+					series.name = "Monto devengado";
+					series.clustered = false;
+					series.columns.template.tooltipText = "Devengado: [bold]{valueY}[/]";
+					series.columns.template.fillOpacity = 0.9;
+					
+					var series2 = chart.series.push(new am4charts.ColumnSeries3D());
+					series2.dataFields.valueY = "vigente";
+					series2.dataFields.categoryX = "nombre";
+					series2.name = "Monto vigente";
+					series2.clustered = false;
+					series2.columns.template.tooltipText = "Vigente: [bold]{valueY}[/]";
+					
+				}); // end am4core.ready()
+			},
+
+
+			// SISIN
       async getHeaders() {
         let response = await axios.get(`${url}/catalogos`)
         if(response.status === 200) {
