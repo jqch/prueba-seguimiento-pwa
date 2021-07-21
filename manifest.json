@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json.schemastore.org/web-manifest",
     "name": "Seguimiento Proyecto",
     "short_name": "Proyectos",
     "description": "Bienvenidos al sistema de Seguimiento de Proyectos",
