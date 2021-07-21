@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json.schemastore.org/web-manifest",
+    "name": "Seguimiento Proyecto",
+    "short_name": "Proyectos",
+    "description": "Bienvenidos al sistema de Seguimiento de Proyectos",
+    "background_color": "#2B2B2B",
+    "theme_color": "#F0DB4F",
+    "orientation": "portrait",
+    "display": "standalone",
+    "start_url": "./?utm_source=web_app_manifest",
+    "scope": "/",
+    "lang": "es-MX",
+    "icons": [
+        {
+            "src": "./img/icono_512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_64.png",
+            "sizes": "64x64",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icono_32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        }
+    ]
+}
