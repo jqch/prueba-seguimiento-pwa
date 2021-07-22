@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,9 +22,13 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+        integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- leaflet fullscreen -->
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
@@ -33,340 +38,419 @@
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 
+    
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+
     <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
+    <script src="https://cdn.amcharts.com/lib/4/themes/material.js"></script>
+
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div id="my-app">
-    <v-app>
-    <v-main>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Seguimiento Proyectos</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#" @click="changePage('SIGEP')">SIGEP</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" @click="changePage('SISIN')">SISIN</a>
-                </li>
-            </ul>
-            <span class="navbar-text">
-                Usuario
-            </span>
-        </div>
-    </nav>
-
-    <div class="container-fluid p-3">
-        <div v-show="loading" id="overlayer"></div>
-        <div v-show="loading" class="spinner">
-            <div class="rect1"></div>
-            <div class="rect2"></div>
-            <div class="rect3"></div>
-            <div class="rect4"></div>
-            <div class="rect5"></div>
-        </div>
-
-        <h5>Proyectos %% page %%</h5>
-
-        <div v-show="page == 'SIGEP'">
-            <div class="row">
-                <div class="col-md-6">
-                    <v-select
-                        v-model="dependencia"
-                        :items="dependencias"
-                        item-text="nombre"
-                        item-value="itemId"
-                        chips
-                        label="Entidad"
-                        multiple
-                    ></v-select>
-                </div>
-                <!-- <div class="col-md-6">
-                    <v-select
-                        v-model="value"
-                        :items="items"
-                        attach
-                        chips
-                        label="Tipo de recurso"
-                        multiple
-                    ></v-select>
-                </div> -->
-            </div>
-
-            <v-card>
-                <h5 class="text-header">General</h5>
-                <small>
-                    <div id="chartdivgeneral1" class="chartam"></div>
-                </small>
-                <v-card-title>
-                    <v-text-field
-                    v-model="searchGeneral"
-                    append-icon="mdi-magnify"
-                    label="Buscar"
-                    single-line
-                    hide-details
-                    ></v-text-field>
-                </v-card-title>
-                <v-data-table
-                    :headers="headersGeneral"
-                    :items="general"
-                    :search="searchGeneral"
-                    dense
-                ></v-data-table>
-            </v-card>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <v-card>
-                        <h5 class="text-header">Capital</h5>
-                        <small>
-                            <div id="chartdivcapital1" class="chartam"></div>
-                        </small>
-                        <v-card-title>
-                            <v-text-field
-                            v-model="searchGeneral"
-                            append-icon="mdi-magnify"
-                            label="Buscar"
-                            single-line
-                            hide-details
-                            ></v-text-field>
-                        </v-card-title>
-                        <v-data-table
-                            :headers="headersGeneral"
-                            :items="capital"
-                            :search="searchCapital"
-                            dense
-                        ></v-data-table>
-                    </v-card>
-                </div>
-                <div class="col-md-6">
-                    <v-card>
-                        <h5 class="text-header">Corriente</h5>
-                        <small>
-                            <div id="chartdivcorriente1" class="chartam"></div>
-                        </small>
-                        <v-card-title>
-                            <v-text-field
-                            v-model="searchGeneral"
-                            append-icon="mdi-magnify"
-                            label="Buscar"
-                            single-line
-                            hide-details
-                            ></v-text-field>
-                        </v-card-title>
-                        <v-data-table
-                            :headers="headersGeneral"
-                            :items="corriente"
-                            :search="searchCorriente"
-                            dense
-                        ></v-data-table>
-                    </v-card>
-                </div>
-            </div>
-
-        </div>
-
-        <div v-show="page == 'SISIN'">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-                        <div class="m-portlet__body amchart_body">
-                            <h5>Proy. por Entidad Ejecutora</h5>
-                            <div id="chartdiv"></div>
-                        </div>
+        <v-app>
+            <v-main>
+                <nav class="navbar navbar-expand-lg navbar-dark">
+                    <a class="navbar-brand" href="#">Seguimiento Proyectos <small>%% page %%</small></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                        aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarText">
+                        <ul class="navbar-nav mr-auto">
+                            <li :class="['nav-items', (page == 'SIGEP') ? 'active' : '']">
+                                <a class="nav-link" href="#" @click="changePage('SIGEP')">SIGEP</a>
+                            </li>
+                            <li :class="['nav-item', (page == 'SISIN') ? 'active' : '']">
+                                <a class="nav-link" href="#" @click="changePage('SISIN')">SISIN</a>
+                            </li>
+                        </ul>
+                        <span class="navbar-text">
+                            Usuario
+                        </span>
                     </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-        
-                        <div class="m-portlet__body amchart_body">
-                            <h5>Proy. por Programa</h5>
-                            <div id="chartdiv1"></div>
-                        </div>
+                </nav>
+
+                <div class="container-fluid p-3">
+                    <div v-show="loading" id="overlayer"></div>
+                    <div v-show="loading" class="spinner">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
                     </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-        
-                        <div class="m-portlet__body amchart_body">
-                            <h5>Proy. por Sector</h5>
-                            <div id="chartdiv2"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-                <div class="m-portlet__head">
-                    <div class="m-portlet__head-caption">
-                        <div class="m-portlet__head-title">
-                            <h3 class="m-portlet__head-text">
-                                Proyectos SISIN
-                                <small> - Detalle de proyectos</small>
-                            </h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="m-portlet__body">
-                    <div class="filters">
-                        <v-row>
-                            <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                            >
+
+                    <div v-show="page == 'SIGEP'">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-primary" role="alert">
+                                    Datos estadísticos validados con fecha de corte al <b>22-07-2021</b>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <v-select v-model="dependencia" :items="dependencias" item-text="nombre"
+                                    item-value="itemId" chips label="Entidad" multiple></v-select>
+                            </div>
+                            <!-- <div class="col-md-6">
                                 <v-select
-                                    v-model="departamento"
-                                    :items="departamentos"
-                                    item-text="nombre"
-                                    item-value="itemId"
-                                    label="Departamento"
+                                    v-model="value"
+                                    :items="items"
+                                    attach
+                                    chips
+                                    label="Tipo de recurso"
+                                    multiple
                                 ></v-select>
-                            </v-col>
-                            <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                            >
-                                <v-select
-                                    v-model="provincia"
-                                    :items="provincias"
-                                    item-text="nombre"
-                                    item-value="itemId"
-                                    label="Provincia"
-                                ></v-select>
-                            </v-col>
-                            <v-col
-                            cols="12"
-                            sm="6"
-                            md="4"
-                            >
-                                <v-select
-                                    v-model="municipio"
-                                    :items="municipios"
-                                    item-text="nombre"
-                                    item-value="itemId"
-                                    label="Municipio"
-                                ></v-select>
-                            </v-col>
-                        </v-row>
-                    </div>
-        
-        
-                    <template>
-                        <v-card>
-                            <v-card-title>
-                                <v-spacer></v-spacer>
-                                <v-text-field
-                                    v-model="search"
-                                    append-icon="mdi-magnify"
-                                    label="Buscar"
-                                    single-line
-                                    hide-details
-                                ></v-text-field>
-                            </v-card-title>
-                            <v-data-table
-                                :headers="headers"
-                                :items="projects"
-                                :search="search"
-                                :items-per-page="7"
-                                :footer-props="{
-                                    'items-per-page-text':'Proyectos por página'
-                                }"
-                            >
-                                <!-- Código sisin -->
-                                <template v-slot:item.f2="{ item }"> 
-                                    <v-chip
-                                        color="darkblue"
-                                        dark
-                                        @click="info(item)"
-                                    >
-                                        %% item.f2 %%
-                                    </v-chip>
-                                </template>
-                                <!-- Nombre -->
-                                <template v-slot:item.f3="{ item }">
-                                    <div style="width: 200px">
-                                        %% item.f3 %%
+                            </div> -->
+                        </div>
+
+                        <div class="accordion" id="accordionGeneral">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left btn-acordion" type="button"
+                                            data-toggle="collapse" data-target="#collapseGeneral" aria-expanded="true"
+                                            aria-controls="collapseGeneral">
+                                            General
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseGeneral" class="collapse show" aria-labelledby="headingOne"
+                                    data-parent="#accordionGeneral">
+                                    <div class="card-body">
+                                        <div class="btn-opciones">
+                                            <h5 class="text-header"></h5>
+                                            <div class="btn-group " role="group" aria-label="Basic example">
+                                                <button type="button" class="btn btn-info" @click="generalOptions.view = 'columnchart'">
+                                                    <i class="las la-chart-bar"></i>
+                                                </button>
+                                                <!-- <button type="button" class="btn btn-info" @click="generalOptions.view = 'barchart'">
+                                                    <i class="las la-chart-bar"></i>
+                                                </button> -->
+                                                <button type="button" class="btn btn-info" @click="generalOptions.view = 'piechart'">
+                                                    <i class="las la-chart-pie"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-info" @click="generalOptions.view = 'table'">
+                                                    <i class="las la-table"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <small v-show="generalOptions.view == 'columnchart'">
+                                            <h5 class="text-header">Cantidad de montos devengado / vigente según dependencia</h5>
+                                            <div id="chartGeneral1" class="chartam"></div>
+                                        </small>
+                                        <!-- <small v-show="generalOptions.view == 'barchart'">
+                                            <div id="chartGeneral2" class="chartam"></div>
+                                        </small> -->
+                                        <small v-show="generalOptions.view == 'piechart'">
+                                            <h5 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h5>
+                                            <div id="chartGeneral2" class="chartam piechart"></div>
+                                        </small>
+                                        <div v-show="generalOptions.view == 'table'">
+                                            <br>
+                                            <v-data-table :headers="headersGeneral" :items="general"
+                                                :search="searchGeneral" :items-per-page="20"
+                                                hide-default-footer dense class="elevation-1">
+                                                <template slot="body.append">
+                                                    <tr>
+                                                        <th colspan="2">Total</th>
+                                                        <th>%% totalGeneral.inicial %%</th>
+                                                        <th>%% totalGeneral.inicial %%</th> 
+                                                        <th>%% totalGeneral.inicial %%</th>
+                                                        <th>%% totalGeneral.inicial %%</th>
+                                                        <th>%% totalGeneral.inicial %%</th>
+                                                    </tr>
+                                                </template>
+                                            </v-data-table>
+                                        </div>
                                     </div>
-                                </template>
-                                <!-- Ubicación -->
-                                <template v-slot:item.f4="{ item }">
-                                    <a href="https://www.google.com.bo/maps/@-16.528444,-68.1081294,18z?hl=es" target="_blank"><i class="flaticon-map-location"></i> Ver Ubicación</a>
-                                </template>
-                            </v-data-table>
-                        </v-card>
-                    </template>
-                </div>
-            </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="accordion" id="accordionCapital">
+                                    <div class="card">
+                                        <div class="card-header" id="headingOne">
+                                            <h2 class="mb-0">
+                                                <button class="btn btn-block text-left btn-acordion" type="button"
+                                                    data-toggle="collapse" data-target="#collapseCapital" aria-expanded="true"
+                                                    aria-controls="collapseCapital">
+                                                    Capital / Transferencia Capital
+                                                </button>
+                                            </h2>
+                                        </div>
         
-            <div v-if="project != ''" class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="m-portlet m-portlet--brand m-portlet--head-solid-bg">
+                                        <div id="collapseCapital" class="collapse show" aria-labelledby="headingOne"
+                                            data-parent="#accordionCapital">
+                                            <div class="card-body">
+                                                <div class="btn-opciones">
+                                                    <h5 class="text-header"></h5>
+                                                    <div class="btn-group " role="group" aria-label="Basic example">
+                                                        <button type="button" class="btn btn-info" @click="capitalOptions.view = 'columnchart'">
+                                                            <i class="las la-chart-bar"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-info" @click="capitalOptions.view = 'piechart'">
+                                                            <i class="las la-chart-pie"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-info" @click="capitalOptions.view = 'table'">
+                                                            <i class="las la-table"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <small v-show="capitalOptions.view == 'columnchart'">
+                                                    <h5 class="text-header">Cantidad de montos devengado / vigente según dependencia</h5>
+                                                    <div id="chartCapital1" class="chartam"></div>
+                                                </small>
+                                                <small v-show="capitalOptions.view == 'piechart'">
+                                                    <h5 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h5>
+                                                    <div id="chartCapital2" class="chartam"></div>
+                                                </small>
+                                                <div v-show="capitalOptions.view == 'table'">
+                                                    <br>
+                                                    <h6>Capital</h6>
+                                                    <v-data-table :headers="headersGeneral" :items="capital"
+                                                        :search="searchGeneral" :items-per-page="20"
+                                                        hide-default-footer dense ></v-data-table>
+                                                    <br>
+                                                    <h6>Transferencia Capital</h6>
+                                                    <v-data-table :headers="headersGeneral" :items="transferenciaCapital"
+                                                        :items-per-page="20"
+                                                        hide-default-footer dense ></v-data-table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="accordion" id="accordionCorriente">
+                                    <div class="card">
+                                        <div class="card-header" id="headingOne">
+                                            <h2 class="mb-0">
+                                                <button class="btn btn-block text-left btn-acordion" type="button"
+                                                    data-toggle="collapse" data-target="#collapseCorriente" aria-expanded="true"
+                                                    aria-controls="collapseCorriente">
+                                                    Corriente / Transferencia Corriente
+                                                </button>
+                                            </h2>
+                                        </div>
+        
+                                        <div id="collapseCorriente" class="collapse show" aria-labelledby="headingOne"
+                                            data-parent="#accordionCorriente">
+                                            <div class="card-body">
+                                                <div class="btn-opciones">
+                                                    <h5 class="text-header"></h5>
+                                                    <div class="btn-group " role="group" aria-label="Basic example">
+                                                        <button type="button" class="btn btn-info" @click="corrienteOptions.view = 'columnchart'">
+                                                            <i class="las la-chart-bar"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-info" @click="corrienteOptions.view = 'piechart'">
+                                                            <i class="las la-chart-pie"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-info" @click="corrienteOptions.view = 'table'">
+                                                            <i class="las la-table"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <small v-show="corrienteOptions.view == 'columnchart'">
+                                                    <h5 class="text-header">Cantidad de montos devengado / vigente según dependencia</h5>
+                                                    <div id="chartCorriente1" class="chartam"></div>
+                                                </small>
+                                                <small v-show="corrienteOptions.view == 'piechart'">
+                                                    <h5 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h5>
+                                                    <div id="chartCorriente2" class="chartam"></div>
+                                                </small>
+                                                <div v-show="corrienteOptions.view == 'table'">
+                                                    <br>
+                                                    <h6>Corriente</h6>
+                                                    <v-data-table :headers="headersGeneral" :items="corriente"
+                                                        :search="searchGeneral" :items-per-page="20"
+                                                        hide-default-footer dense ></v-data-table>
+                                                    <br>
+                                                    <h6>Transferencia Corriente</h6>
+                                                    <v-data-table :headers="headersGeneral" :items="transferenciaCorriente"
+                                                        :items-per-page="20"
+                                                        hide-default-footer dense ></v-data-table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div v-show="page == 'SISIN'">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
+                                    <div class="m-portlet__body amchart_body">
+                                        <h5>Proy. por Entidad Ejecutora</h5>
+                                        <small>
+                                            <div id="chartdiv" class="chartam"></div>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
+
+                                    <div class="m-portlet__body amchart_body">
+                                        <h5>Proy. por Programa</h5>
+                                        <small>
+                                            <div id="chartdiv1" class="chartam"></div>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="col-lg-4">
+                                <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
+
+                                    <div class="m-portlet__body amchart_body">
+                                        <h5>Proy. por Sector</h5>
+                                        <div id="chartdiv2"></div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+
+                        <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
                             <div class="m-portlet__head">
                                 <div class="m-portlet__head-caption">
                                     <div class="m-portlet__head-title">
-                                        <span class="m-portlet__head-icon">
-                                            <i class="flaticon-eye"></i>
-                                        </span>
-                                        <h3 class="m-portlet__head-text">
-                                            Ficha Técnica
-                                        </h3>
+                                        <h5 class="m-portlet__head-text">
+                                            Proyectos SISIN
+                                            <small> - Detalle de proyectos</small>
+                                        </h5>
                                     </div>
-                                </div>
-                                <div class="m-portlet__head-tools">
-                                    <ul class="m-portlet__nav">
-                                        <li class="m-portlet__nav-item m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push" m-dropdown-toggle="hover">
-                                            <a href="#" class="m-portlet__nav-link m-portlet__nav-link--icon m-portlet__nav-link--icon-xl" data-dismiss="modal" aria-label="Close">
-                                                <i class="la la-close m--font-light"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                             <div class="m-portlet__body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h2>%% project.f2 %%</h2>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div id="chartdivpie"></div>
-                                    </div>
+                                <div class="filters">
+                                    <v-row>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-select v-model="departamento" :items="departamentos" item-text="nombre"
+                                                item-value="itemId" label="Departamento"></v-select>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-select v-model="provincia" :items="provincias" item-text="nombre"
+                                                item-value="itemId" label="Provincia"></v-select>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-select v-model="municipio" :items="municipios" item-text="nombre"
+                                                item-value="itemId" label="Municipio"></v-select>
+                                        </v-col>
+                                    </v-row>
                                 </div>
-                                Código SISIN: %% project.f2 %%
-                                <table>
-                                    <tr v-for="(item, index) in project" :key="index">
-                                        <td>%% index %%</td>
-                                        <td>%% item %%</td>
-                                    </tr>
-                                </table>
+
+
+                                <template>
+                                    <v-card>
+                                        <v-card-title>
+                                            <v-spacer></v-spacer>
+                                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar"
+                                                single-line hide-details></v-text-field>
+                                        </v-card-title>
+                                        <v-data-table :headers="headers" :items="projects" :search="search"
+                                            :items-per-page="7" :footer-props="{
+                                                    'items-per-page-text':'Proyectos por página'
+                                                }">
+                                            <!-- Código sisin -->
+                                            <template v-slot:item.f2="{ item }">
+                                                <v-chip color="darkblue" dark @click="info(item)">
+                                                    %% item.f2 %%
+                                                </v-chip>
+                                            </template>
+                                            <!-- Nombre -->
+                                            <template v-slot:item.f3="{ item }">
+                                                <div style="width: 200px">
+                                                    %% item.f3 %%
+                                                </div>
+                                            </template>
+                                            <!-- Ubicación -->
+                                            <template v-slot:item.f4="{ item }">
+                                                <a href="https://www.google.com.bo/maps/@-16.528444,-68.1081294,18z?hl=es"
+                                                    target="_blank"><i class="flaticon-map-location"></i> Ver
+                                                    Ubicación</a>
+                                            </template>
+                                        </v-data-table>
+                                    </v-card>
+                                </template>
                             </div>
                         </div>
+
+                        <div v-if="project != ''" class="modal fade" id="modal1" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="m-portlet m-portlet--brand m-portlet--head-solid-bg">
+                                        <div class="m-portlet__head">
+                                            <div class="m-portlet__head-caption">
+                                                <div class="m-portlet__head-title">
+                                                    <span class="m-portlet__head-icon">
+                                                        <i class="flaticon-eye"></i>
+                                                    </span>
+                                                    <h3 class="m-portlet__head-text">
+                                                        Ficha Técnica
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                            <div class="m-portlet__head-tools">
+                                                <ul class="m-portlet__nav">
+                                                    <li class="m-portlet__nav-item m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push"
+                                                        m-dropdown-toggle="hover">
+                                                        <a href="#"
+                                                            class="m-portlet__nav-link m-portlet__nav-link--icon m-portlet__nav-link--icon-xl"
+                                                            data-dismiss="modal" aria-label="Close">
+                                                            <i class="la la-close m--font-light"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="m-portlet__body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <h2>%% project.f2 %%</h2>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div id="chartdivpie"></div>
+                                                </div>
+                                            </div>
+                                            Código SISIN: %% project.f2 %%
+                                            <table>
+                                                <tr v-for="(item, index) in project" :key="index">
+                                                    <td>%% index %%</td>
+                                                    <td>%% item %%</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
 
-        </div>
-    </div>
-
-    </v-main>
-    </v-app>
+            </v-main>
+        </v-app>
     </div>
 
     <script src="js/index.js"></script>
 
     <script>
-        if('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator) {
             // navigator.serviceWorker.register('sw.js', {scope: '/prueba-seguimiento-pwa/'})
-            navigator.serviceWorker.register('sw.js', {scope: './'})
+            navigator.serviceWorker.register('sw.js', { scope: './' })
                 .then(reg => console.log('Registro de SW exitoso', reg))
                 .catch(err => console.log('Error al registrar el sw', err))
         }
@@ -374,4 +458,5 @@
 
     <!-- <script src="./js/app.js"></script> -->
 </body>
+
 </html>

@@ -26,11 +26,22 @@ var vm = new Vue({
             dependencia: [],
 						dependencias: [],
 						montos: '',
+
 						general: [],
+						totalGeneral: [],
+
 						capital: [],
-						tcapital: [],
+						totalCapital: [],
+
+						transferenciaCapital: [],
+						totalTransferenciaCapital: [],
+
 						corriente: [],
-						tcorriente: [],
+						totalCorriente: [],
+
+						transferenciaCorriente: [],
+						totalTransferenciaCorriente: [],
+
 						searchGeneral: '',
 						headersGeneral: [
 							{ text: '#', value: 'itemId' },
@@ -43,6 +54,15 @@ var vm = new Vue({
 						],
 						searchCapital: '',
 						searchCorriente: '',
+						generalOptions: {
+							view: 'columnchart'
+						},
+						capitalOptions: {
+							view: 'columnchart'
+						},
+						corrienteOptions: {
+							view: 'columnchart'
+						},
             cont: 0,
             headers: [],
             projects: [],
@@ -57,7 +77,7 @@ var vm = new Vue({
             project: {}
         }
     },
-    async mounted(){
+    async mounted() {
 			await this.getDependencias()
 			await this.getSigepMontos()
 
@@ -66,6 +86,9 @@ var vm = new Vue({
       await this.getHeaders()
     },
     watch: {
+			dependencia: function(){
+				this.getSigepMontos()
+			},
       departamento: function() {
         this.getProvincias()
       },
@@ -88,20 +111,133 @@ var vm = new Vue({
         }
 			},
 			async getSigepMontos() {
-				let response = await axios.get(`${sigepUrl}/montos`)
+				let params = ''
+				if(this.dependencia.length > 0){
+					params = '?itemId='+this.dependencia
+				}
+				let response = await axios.get(`${sigepUrl}/montos${params}`)
         if(response.status === 200) {
           this.montos = response.data
 					this.general = response.data.general
-					this.capital = response.data.capital
-					this.corriente = response.data.corriente
+					this.totalGeneral = response.data.totalGeneral[0]
 
-					this.chartGeneral1('chartdivgeneral1', this.general)
-					this.chartGeneral1('chartdivcapital1', this.capital)
-					this.chartGeneral1('chartdivcorriente1', this.corriente)
+					this.capital = response.data.capital
+					this.totalCapital = response.data.totalCapital[0]
+
+					this.transferenciaCapital = response.data.tCapital
+					this.totalTransferenciaCapital = response.data.totalTCapital
+
+					this.corriente = response.data.corriente
+					this.totalCorriente = response.data.totalCorriente[0]
+
+					this.transferenciaCorriente = response.data.tCorriente
+					this.totalTransferenciaCorriente = response.data.totalTCorriente
+
+					// General
+					this.columnchart('chartGeneral1', this.general, ['#5a4394','#1bb8d0'])
+					// this.barchart('chartGeneral2', this.general)
+					this.piechart('chartGeneral2', [
+						{ tipo: 'Ejecutado', monto: response.data.totalGeneral[0].devengado },
+						{ tipo: 'Saldo', monto: response.data.totalGeneral[0].saldo }
+					])
+
+					// Capital
+					this.columnchart('chartCapital1', this.capital, ['#833d90','#f18409'])//['#4152a0','#1bb8d0'])
+					this.piechart('chartCapital2', [
+						{ tipo: 'Ejecutado', monto: response.data.totalCapital[0].devengado },
+						{ tipo: 'Saldo', monto: response.data.totalCapital[0].saldo }
+					])
+					
+					// Capital '#0277bd','#005432'
+					this.columnchart('chartCorriente1', this.corriente, ['#833d90','#f18409'])//['#5a4394','#1bb8d0'])
+					this.piechart('chartCorriente2', [
+						{ tipo: 'Ejecutado', monto: response.data.totalCorriente[0].devengado },
+						{ tipo: 'Saldo', monto: response.data.totalCorriente[0].saldo }
+					])
+
+					this.barchart('barchartCorriente1', this.corriente)
         }
 			},
 
-			chartGeneral1(div, datos) {
+			columnchart(div, datos, colores) {
+				am4core.addLicense("ch-custom-attribution");
+				am4core.ready(function() {
+
+					// Themes begin
+					am4core.useTheme(am4themes_material);
+					am4core.useTheme(am4themes_animated);
+					// Themes end
+					
+					// Create chart instance
+					var chart = am4core.create(div, am4charts.XYChart);
+					chart.exporting.menu = new am4core.ExportMenu();
+
+					chart.colors.list = [
+						am4core.color(colores[0]),
+						am4core.color(colores[1])
+					];
+					
+					// Add percent sign to all numbers
+					// chart.numberFormatter.numberFormat = "#.#'%'";
+					
+					// Add data
+					chart.data = datos;
+					
+					// Create axes
+					var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+					categoryAxis.dataFields.category = "nombre";
+					categoryAxis.renderer.grid.template.location = 0;
+					categoryAxis.renderer.minGridDistance = 30;
+					categoryAxis.renderer.labels.template.rotation = 270;
+					categoryAxis.renderer.labels.template.hideOversized = false;
+          categoryAxis.renderer.labels.template.truncate = true;
+					categoryAxis.renderer.labels.template.maxWidth = 110;
+					
+					var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+					valueAxis.title.text = "Monto en Bs.";
+					valueAxis.title.fontWeight = 800;
+
+					// let axisBreak = valueAxis.axisBreaks.create();
+					// axisBreak.startValue = 60000000;
+					// axisBreak.endValue = 350000000;
+					// axisBreak.breakSize = 0.05;
+					// axisBreak.events.on("over", () => {
+					// 	axisBreak.animate(
+					// 		[{ property: "breakSize", to: 1 }, { property: "opacity", to: 0.1 }],
+					// 		1500,
+					// 		am4core.ease.sinOut
+					// 	);
+					// });
+					// axisBreak.events.on("out", () => {
+					// 	axisBreak.animate(
+					// 		[{ property: "breakSize", to: 0.05 }, { property: "opacity", to: 1 }],
+					// 		1000,
+					// 		am4core.ease.quadOut
+					// 	);
+					// });
+					
+					// Create series
+					var series = chart.series.push(new am4charts.ColumnSeries());
+					series.dataFields.valueY = "vigente";
+					series.dataFields.categoryX = "nombre";
+					series.clustered = false;
+					series.tooltipText = "{categoryX} (Vigente): [bold]{valueY}[/]";
+					
+					var series2 = chart.series.push(new am4charts.ColumnSeries());
+					series2.dataFields.valueY = "devengado";
+					series2.dataFields.categoryX = "nombre";
+					series2.clustered = false;
+					series2.columns.template.width = am4core.percent(50);
+					series2.tooltipText = "{categoryX} (Devengado): [bold]{valueY}[/]";
+					
+					chart.cursor = new am4charts.XYCursor();
+					chart.cursor.lineX.disabled = true;
+					chart.cursor.lineY.disabled = true;
+					
+				}); // end am4core.ready()
+			},
+
+			barchart(div, datos) {
 				am4core.addLicense("ch-custom-attribution");
 				am4core.ready(function() {
 
@@ -120,10 +256,11 @@ var vm = new Vue({
 					categoryAxis.dataFields.category = "nombre";
 					categoryAxis.renderer.grid.template.location = 0;
 					categoryAxis.renderer.minGridDistance = 30;
+					categoryAxis.renderer.labels.template.horizontalCenter = "middle";
 					categoryAxis.renderer.labels.template.rotation = 270;
 					categoryAxis.renderer.labels.template.hideOversized = false;
           categoryAxis.renderer.labels.template.truncate = true;
-					categoryAxis.renderer.labels.template.maxWidth = 100;
+					categoryAxis.renderer.labels.template.maxWidth = 110;
 					
 					var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 					valueAxis.title.text = "Monto en Bs.";
@@ -146,6 +283,52 @@ var vm = new Vue({
 					series2.name = "Monto vigente";
 					series2.clustered = false;
 					series2.columns.template.tooltipText = "Vigente: [bold]{valueY}[/]";
+					
+				}); // end am4core.ready()
+			},
+			piechart(div, datos) {
+				
+				am4core.ready(function() {
+
+					// Themes begin
+					am4core.useTheme(am4themes_animated);
+					// Themes end
+					
+					// Create chart instance
+					var chart = am4core.create(div, am4charts.PieChart);
+					chart.exporting.menu = new am4core.ExportMenu();
+
+					chart.numberFormatter.numberFormat = "#.##'%'";
+					
+					// Add data
+					chart.data = datos;
+					
+					// Add and configure Series
+					var pieSeries = chart.series.push(new am4charts.PieSeries());
+					pieSeries.dataFields.value = "monto";
+					pieSeries.dataFields.category = "tipo";
+					pieSeries.slices.template.stroke = am4core.color("#fff");
+					pieSeries.slices.template.strokeOpacity = 1;
+					
+					// This creates initial animation
+					pieSeries.hiddenState.properties.opacity = 1;
+					pieSeries.hiddenState.properties.endAngle = -90;
+					pieSeries.hiddenState.properties.startAngle = -90;
+					
+					pieSeries.labels.template.disabled = true;
+					pieSeries.ticks.template.disabled = true;
+
+					pieSeries.colors.list = [
+						// am4core.color("#4caf50"),
+						// am4core.color("#8e24aa"),
+						am4core.color("#ba68c8"),
+						am4core.color("#ff9800")
+					];
+
+					chart.hiddenState.properties.radius = am4core.percent(0);
+					
+					chart.legend = new am4charts.Legend();
+					
 					
 				}); // end am4core.ready()
 			},
@@ -214,6 +397,9 @@ var vm = new Vue({
             categoryAxis.renderer.labels.template.horizontalCenter = "right";
             categoryAxis.renderer.labels.template.verticalCenter = "middle";
             categoryAxis.renderer.labels.template.rotation = 270;
+						categoryAxis.renderer.labels.template.hideOversized = false;
+						categoryAxis.renderer.labels.template.truncate = true;
+						categoryAxis.renderer.labels.template.maxWidth = 110;
             categoryAxis.tooltip.disabled = true;
             categoryAxis.renderer.minHeight = 110;
 
@@ -270,7 +456,7 @@ var vm = new Vue({
             categoryAxis.renderer.labels.template.rotation = 270;
             categoryAxis.renderer.labels.template.hideOversized = false;
             categoryAxis.renderer.labels.template.truncate = true;
-            categoryAxis.renderer.labels.template.maxWidth = 120;
+            categoryAxis.renderer.labels.template.maxWidth = 110;
             //categoryAxis.renderer.labels.template.wrap = true;
             categoryAxis.renderer.minGridDistance = 20;
             categoryAxis.renderer.labels.template.horizontalCenter = "right";
