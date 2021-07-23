@@ -1,6 +1,6 @@
 html, body {
     height: 100%;
-    background-color: white;
+    background-color: #eeeff4;
 }
 
 hr {
@@ -16,19 +16,9 @@ p {
 }
 
 
-#chartdiv, #chartdiv1, #chartdiv2 {
+#chartdiv, #chartdiv1 {
   width: 100%;
-  height: 300px;
-}
-
-#chartdivgeneral1 {
-  width: 100%;
-  height: 320px;
-}
-
-#chartdivpie {
-  width: 100%;
-  height: 350px;
+  height: 330px;
 }
 
 .chartam {
@@ -50,11 +40,11 @@ p {
 }
 
 .v-data-table-header {
-    background-color: #387ec9;
+    background-color: #e6e6e6;
 }
 
 .v-data-table-header .text-start{
-    color: white !important;
+    color: black !important;
 }
 
 /* ------------------------- Estilos para la cortina de cargado ------------------------ */
@@ -76,7 +66,7 @@ p {
   font-size: 10px;
   position: fixed;
   z-index: 101;
-  margin-top: 20vw;
+  margin-top: 35vw;
   margin-left: 49vw;
 }
 
@@ -134,8 +124,11 @@ p {
         margin-left: 38vw;
     }
 }
+
+/*----------------------------------------------*/
+
 .navbar {
-    background-color: #0277bd !important;
+    background-color: #2c2e3e !important;
 }
 .text-header{
     text-align: center;
@@ -152,5 +145,26 @@ p {
 }
 
 .btn-opciones i {
+    color: white;
+}
+
+.footer-totals {
+    background-color: #EEEEEE;
+}
+
+.v-data-table__empty-wrapper {
+    display: none;
+}
+
+.data-group > .card-header{
+    background-color: #0277bd;
+}
+.data-group button{
+    color: #e6e6e6;
+    font-weight: 300;
+    font-size: 1.1rem;
+}
+
+.data-group button:hover{
     color: white;
 }

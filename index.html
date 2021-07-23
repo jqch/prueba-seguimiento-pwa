@@ -13,7 +13,7 @@
     <meta name="" content="">
     <meta name="" content="">
 
-    <title>Mi PWA</title>
+    <title>Seguimiento</title>
 
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="./img/icono.png">
@@ -47,6 +47,8 @@
 
     <script src="https://cdn.amcharts.com/lib/4/themes/material.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -70,7 +72,13 @@
                             </li>
                         </ul>
                         <span class="navbar-text">
-                            Usuario
+                            <v-avatar>
+                                <img
+                                  src="https://cdn.vuetifyjs.com/images/john.jpg"
+                                  alt="John"
+                                >
+                            </v-avatar>
+                            Anónimo
                         </span>
                     </div>
                 </nav>
@@ -88,13 +96,13 @@
                     <div v-show="page == 'SIGEP'">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="alert alert-primary" role="alert">
-                                    Datos estadísticos validados con fecha de corte al <b>22-07-2021</b>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
                                 <v-select v-model="dependencia" :items="dependencias" item-text="nombre"
                                     item-value="itemId" chips label="Entidad" multiple></v-select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-info" role="alert">
+                                    Datos estadísticos validados con fecha de corte al <b>22-07-2021</b>
+                                </div>
                             </div>
                             <!-- <div class="col-md-6">
                                 <v-select
@@ -109,7 +117,7 @@
                         </div>
 
                         <div class="accordion" id="accordionGeneral">
-                            <div class="card">
+                            <div class="card data-group">
                                 <div class="card-header" id="headingOne">
                                     <h2 class="mb-0">
                                         <button class="btn btn-block text-left btn-acordion" type="button"
@@ -141,14 +149,14 @@
                                             </div>
                                         </div>
                                         <small v-show="generalOptions.view == 'columnchart'">
-                                            <h5 class="text-header">Cantidad de montos devengado / vigente según dependencia</h5>
+                                            <h6 class="text-header">Cantidad de montos devengado / vigente según dependencia</h6>
                                             <div id="chartGeneral1" class="chartam"></div>
                                         </small>
                                         <!-- <small v-show="generalOptions.view == 'barchart'">
                                             <div id="chartGeneral2" class="chartam"></div>
                                         </small> -->
                                         <small v-show="generalOptions.view == 'piechart'">
-                                            <h5 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h5>
+                                            <h6 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h6>
                                             <div id="chartGeneral2" class="chartam piechart"></div>
                                         </small>
                                         <div v-show="generalOptions.view == 'table'">
@@ -156,14 +164,26 @@
                                             <v-data-table :headers="headersGeneral" :items="general"
                                                 :search="searchGeneral" :items-per-page="20"
                                                 hide-default-footer dense class="elevation-1">
+                                                <template v-slot:item.inicial="{ item }">
+                                                    <span>%% formatNumber(item.inicial) %%</span>
+                                                </template>
+                                                <template v-slot:item.vigente="{ item }">
+                                                    <span>%% formatNumber(item.vigente) %%</span>
+                                                </template>
+                                                <template v-slot:item.devengado="{ item }">
+                                                    <span>%% formatNumber(item.devengado) %%</span>
+                                                </template>
+                                                <template v-slot:item.saldo="{ item }">
+                                                    <span>%% formatNumber(item.saldo) %%</span>
+                                                </template>
                                                 <template slot="body.append">
-                                                    <tr>
+                                                    <tr class="footer-totals" v-if="totalGeneral != ''">
                                                         <th colspan="2">Total</th>
-                                                        <th>%% totalGeneral.inicial %%</th>
-                                                        <th>%% totalGeneral.inicial %%</th> 
-                                                        <th>%% totalGeneral.inicial %%</th>
-                                                        <th>%% totalGeneral.inicial %%</th>
-                                                        <th>%% totalGeneral.inicial %%</th>
+                                                        <th>%% formatNumber(totalGeneral.inicial) %%</th>
+                                                        <th>%% formatNumber(totalGeneral.vigente) %%</th> 
+                                                        <th>%% formatNumber(totalGeneral.devengado) %%</th>
+                                                        <th>%% formatNumber(totalGeneral.saldo) %%</th>
+                                                        <th>%% totalGeneral.ejec %%</th>
                                                     </tr>
                                                 </template>
                                             </v-data-table>
@@ -176,8 +196,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="accordion" id="accordionCapital">
-                                    <div class="card">
-                                        <div class="card-header" id="headingOne">
+                                    <div class="card data-group">
+                                        <div class="card-header" id="headingTwo">
                                             <h2 class="mb-0">
                                                 <button class="btn btn-block text-left btn-acordion" type="button"
                                                     data-toggle="collapse" data-target="#collapseCapital" aria-expanded="true"
@@ -187,7 +207,7 @@
                                             </h2>
                                         </div>
         
-                                        <div id="collapseCapital" class="collapse show" aria-labelledby="headingOne"
+                                        <div id="collapseCapital" class="collapse show" aria-labelledby="headingTwo"
                                             data-parent="#accordionCapital">
                                             <div class="card-body">
                                                 <div class="btn-opciones">
@@ -205,11 +225,11 @@
                                                     </div>
                                                 </div>
                                                 <small v-show="capitalOptions.view == 'columnchart'">
-                                                    <h5 class="text-header">Cantidad de montos devengado / vigente según dependencia</h5>
+                                                    <h6 class="text-header">Cantidad de montos devengado / vigente según dependencia</h6>
                                                     <div id="chartCapital1" class="chartam"></div>
                                                 </small>
                                                 <small v-show="capitalOptions.view == 'piechart'">
-                                                    <h5 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h5>
+                                                    <h6 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h6>
                                                     <div id="chartCapital2" class="chartam"></div>
                                                 </small>
                                                 <div v-show="capitalOptions.view == 'table'">
@@ -217,12 +237,77 @@
                                                     <h6>Capital</h6>
                                                     <v-data-table :headers="headersGeneral" :items="capital"
                                                         :search="searchGeneral" :items-per-page="20"
-                                                        hide-default-footer dense ></v-data-table>
+                                                        hide-default-footer dense >
+                                                        <template v-slot:item.inicial="{ item }">
+                                                            <span>%% formatNumber(item.inicial) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.vigente="{ item }">
+                                                            <span>%% formatNumber(item.vigente) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.devengado="{ item }">
+                                                            <span>%% formatNumber(item.devengado) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.saldo="{ item }">
+                                                            <span>%% formatNumber(item.saldo) %%</span>
+                                                        </template>
+                                                        <template slot="body.append">
+                                                            <tr class="footer-totals" v-if="totalCapital != ''">
+                                                                <th colspan="2">Total</th>
+                                                                <th>%% formatNumber(totalCapital.inicial) %%</th>
+                                                                <th>%% formatNumber(totalCapital.vigente) %%</th> 
+                                                                <th>%% formatNumber(totalCapital.devengado) %%</th>
+                                                                <th>%% formatNumber(totalCapital.saldo) %%</th>
+                                                                <th>%% totalCapital.ejec %%</th>
+                                                            </tr>
+                                                        </template>
+                                                    </v-data-table>
                                                     <br>
                                                     <h6>Transferencia Capital</h6>
                                                     <v-data-table :headers="headersGeneral" :items="transferenciaCapital"
                                                         :items-per-page="20"
-                                                        hide-default-footer dense ></v-data-table>
+                                                        hide-default-footer dense >
+                                                        <template v-slot:item.inicial="{ item }">
+                                                            <span>%% formatNumber(item.inicial) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.vigente="{ item }">
+                                                            <span>%% formatNumber(item.vigente) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.devengado="{ item }">
+                                                            <span>%% formatNumber(item.devengado) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.saldo="{ item }">
+                                                            <span>%% formatNumber(item.saldo) %%</span>
+                                                        </template>
+                                                        <template slot="body.append">
+                                                            <tr class="footer-totals" v-if="totalTransferenciaCapital != ''">
+                                                                <th colspan="2">Total</th>
+                                                                <th>%% formatNumber(totalTransferenciaCapital.inicial) %%</th>
+                                                                <th>%% formatNumber(totalTransferenciaCapital.vigente) %%</th> 
+                                                                <th>%% formatNumber(totalTransferenciaCapital.devengado) %%</th>
+                                                                <th>%% formatNumber(totalTransferenciaCapital.saldo) %%</th>
+                                                                <th>%% totalTransferenciaCapital.ejec %%</th>
+                                                            </tr>
+                                                        </template>
+                                                    </v-data-table>
+                                                    <br>
+                                                    <h6>Capital + Transferencia Capital</h6>
+                                                    <v-data-table :headers="headersGeneral" :items="[]"
+                                                        :items-per-page="0"
+                                                        hide-default-footer dense>
+                                                        <!-- <template slot="no-data">
+                                                            <tr style="visibility: hidden;" />
+                                                        </template> -->
+                                                        <template slot="body.append">
+                                                            <tr class="footer-totals" v-if="sumaTotalCapital != ''">
+                                                                <th colspan="2">Total</th>
+                                                                <th>%% formatNumber(sumaTotalCapital.inicial) %%</th>
+                                                                <th>%% formatNumber(sumaTotalCapital.vigente) %%</th> 
+                                                                <th>%% formatNumber(sumaTotalCapital.devengado) %%</th>
+                                                                <th>%% formatNumber(sumaTotalCapital.saldo) %%</th>
+                                                                <th>%% sumaTotalCapital.ejec %%</th>
+                                                            </tr>
+                                                        </template>
+                                                    </v-data-table>
                                                 </div>
                                             </div>
                                         </div>
@@ -231,8 +316,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="accordion" id="accordionCorriente">
-                                    <div class="card">
-                                        <div class="card-header" id="headingOne">
+                                    <div class="card data-group">
+                                        <div class="card-header" id="headingThree">
                                             <h2 class="mb-0">
                                                 <button class="btn btn-block text-left btn-acordion" type="button"
                                                     data-toggle="collapse" data-target="#collapseCorriente" aria-expanded="true"
@@ -242,7 +327,7 @@
                                             </h2>
                                         </div>
         
-                                        <div id="collapseCorriente" class="collapse show" aria-labelledby="headingOne"
+                                        <div id="collapseCorriente" class="collapse show" aria-labelledby="headingThree"
                                             data-parent="#accordionCorriente">
                                             <div class="card-body">
                                                 <div class="btn-opciones">
@@ -260,11 +345,11 @@
                                                     </div>
                                                 </div>
                                                 <small v-show="corrienteOptions.view == 'columnchart'">
-                                                    <h5 class="text-header">Cantidad de montos devengado / vigente según dependencia</h5>
+                                                    <h6 class="text-header">Cantidad de montos devengado / vigente según dependencia</h6>
                                                     <div id="chartCorriente1" class="chartam"></div>
                                                 </small>
                                                 <small v-show="corrienteOptions.view == 'piechart'">
-                                                    <h5 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h5>
+                                                    <h6 class="text-header">Porcentaje de Ejecución y Saldo según dependencia</h6>
                                                     <div id="chartCorriente2" class="chartam"></div>
                                                 </small>
                                                 <div v-show="corrienteOptions.view == 'table'">
@@ -272,12 +357,86 @@
                                                     <h6>Corriente</h6>
                                                     <v-data-table :headers="headersGeneral" :items="corriente"
                                                         :search="searchGeneral" :items-per-page="20"
-                                                        hide-default-footer dense ></v-data-table>
+                                                        hide-default-footer dense >
+                                                        <template v-slot:item.inicial="{ item }">
+                                                            <span>%% formatNumber(item.inicial) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.vigente="{ item }">
+                                                            <span>%% formatNumber(item.vigente) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.devengado="{ item }">
+                                                            <span>%% formatNumber(item.devengado) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.saldo="{ item }">
+                                                            <span>%% formatNumber(item.saldo) %%</span>
+                                                        </template>
+                                                        <template slot="body.append">
+                                                            <tr class="footer-totals" v-if="totalCorriente != ''">
+                                                                <th colspan="2">Total</th>
+                                                                <th>%% formatNumber(totalCorriente.inicial) %%</th>
+                                                                <th>%% formatNumber(totalCorriente.vigente) %%</th> 
+                                                                <th>%% formatNumber(totalCorriente.devengado) %%</th>
+                                                                <th>%% formatNumber(totalCorriente.saldo) %%</th>
+                                                                <th>%% totalCorriente.ejec %%</th>
+                                                            </tr>
+                                                        </template>
+                                                    </v-data-table>
                                                     <br>
                                                     <h6>Transferencia Corriente</h6>
                                                     <v-data-table :headers="headersGeneral" :items="transferenciaCorriente"
                                                         :items-per-page="20"
-                                                        hide-default-footer dense ></v-data-table>
+                                                        hide-default-footer dense >
+                                                        <template v-slot:item.inicial="{ item }">
+                                                            <span>%% formatNumber(item.inicial) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.vigente="{ item }">
+                                                            <span>%% formatNumber(item.vigente) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.devengado="{ item }">
+                                                            <span>%% formatNumber(item.devengado) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.saldo="{ item }">
+                                                            <span>%% formatNumber(item.saldo) %%</span>
+                                                        </template>
+                                                        <template slot="body.append">
+                                                            <tr class="footer-totals" v-if="totalTransferenciaCorriente != ''">
+                                                                <th colspan="2">Total</th>
+                                                                <th>%% formatNumber(totalTransferenciaCorriente.inicial) %%</th>
+                                                                <th>%% formatNumber(totalTransferenciaCorriente.vigente) %%</th> 
+                                                                <th>%% formatNumber(totalTransferenciaCorriente.devengado) %%</th>
+                                                                <th>%% formatNumber(totalTransferenciaCorriente.saldo) %%</th>
+                                                                <th>%% totalTransferenciaCorriente.ejec %%</th>
+                                                            </tr>
+                                                        </template>
+                                                    </v-data-table>
+                                                    <br>
+                                                    <h6>Corriente + Transferencia Corriente</h6>
+                                                    <v-data-table :headers="headersGeneral" :items="[]"
+                                                        :items-per-page="0"
+                                                        hide-default-footer dense >
+                                                        <template v-slot:item.inicial="{ item }">
+                                                            <span>%% formatNumber(item.inicial) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.vigente="{ item }">
+                                                            <span>%% formatNumber(item.vigente) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.devengado="{ item }">
+                                                            <span>%% formatNumber(item.devengado) %%</span>
+                                                        </template>
+                                                        <template v-slot:item.saldo="{ item }">
+                                                            <span>%% formatNumber(item.saldo) %%</span>
+                                                        </template>
+                                                        <template slot="body.append">
+                                                            <tr class="footer-totals" v-if="sumaTotalCorriente != ''">
+                                                                <th colspan="2">Total</th>
+                                                                <th>%% formatNumber(sumaTotalCorriente.inicial) %%</th>
+                                                                <th>%% formatNumber(sumaTotalCorriente.vigente) %%</th> 
+                                                                <th>%% formatNumber(sumaTotalCorriente.devengado) %%</th>
+                                                                <th>%% formatNumber(sumaTotalCorriente.saldo) %%</th>
+                                                                <th>%% sumaTotalCorriente.ejec %%</th>
+                                                            </tr>
+                                                        </template>
+                                                    </v-data-table>
                                                 </div>
                                             </div>
                                         </div>
@@ -289,51 +448,8 @@
                     </div>
 
                     <div v-show="page == 'SISIN'">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-                                    <div class="m-portlet__body amchart_body">
-                                        <h5>Proy. por Entidad Ejecutora</h5>
-                                        <small>
-                                            <div id="chartdiv" class="chartam"></div>
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-
-                                    <div class="m-portlet__body amchart_body">
-                                        <h5>Proy. por Programa</h5>
-                                        <small>
-                                            <div id="chartdiv1" class="chartam"></div>
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- <div class="col-lg-4">
-                                <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-
-                                    <div class="m-portlet__body amchart_body">
-                                        <h5>Proy. por Sector</h5>
-                                        <div id="chartdiv2"></div>
-                                    </div>
-                                </div>
-                            </div> -->
-                        </div>
-
-                        <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
-                            <div class="m-portlet__head">
-                                <div class="m-portlet__head-caption">
-                                    <div class="m-portlet__head-title">
-                                        <h5 class="m-portlet__head-text">
-                                            Proyectos SISIN
-                                            <small> - Detalle de proyectos</small>
-                                        </h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="m-portlet__body">
+                        <div class="card">
+                            <div class="card-body">
                                 <div class="filters">
                                     <v-row>
                                         <v-col cols="12" sm="6" md="4">
@@ -350,40 +466,76 @@
                                         </v-col>
                                     </v-row>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
+                                            <div class="m-portlet__body amchart_body">
+                                                <h6>Proy. por Entidad Ejecutora</h6>
+                                                <small>
+                                                    <div id="chartdiv" class="chartam"></div>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
+                                            <div class="m-portlet__body amchart_body">
+                                                <h6>Proy. por Programa</h6>
+                                                <small>
+                                                    <div id="chartdiv1" class="chartam"></div>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <template>
+                                            <v-card>
+                                                <v-card-title>
+                                                    <v-spacer></v-spacer>
+                                                    <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar"
+                                                        single-line hide-details></v-text-field>
+                                                </v-card-title>
+                                                <v-data-table :headers="headers" :items="projects" :search="search"
+                                                    :items-per-page="7" :footer-props="{
+                                                            'items-per-page-text':'Proyectos por página'
+                                                        }">
+                                                    <!-- Código sisin -->
+                                                    <template v-slot:item.f2="{ item }">
+                                                        <v-chip color="darkblue" dark @click="info(item)">
+                                                            %% item.f2 %%
+                                                        </v-chip>
+                                                    </template>
+                                                    <!-- Nombre -->
+                                                    <template v-slot:item.f3="{ item }">
+                                                        <div style="width: 200px">
+                                                            %% item.f3 %%
+                                                        </div>
+                                                    </template>
+                                                    <!-- Ubicación -->
+                                                    <template v-slot:item.f4="{ item }">
+                                                        <a href="https://www.google.com.bo/maps/@-16.528444,-68.1081294,18z?hl=es"
+                                                            target="_blank"><i class="flaticon-map-location"></i> Ver
+                                                            Ubicación</a>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card>
+                                        </template>
+                                    </div>
 
-
-                                <template>
-                                    <v-card>
-                                        <v-card-title>
-                                            <v-spacer></v-spacer>
-                                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar"
-                                                single-line hide-details></v-text-field>
-                                        </v-card-title>
-                                        <v-data-table :headers="headers" :items="projects" :search="search"
-                                            :items-per-page="7" :footer-props="{
-                                                    'items-per-page-text':'Proyectos por página'
-                                                }">
-                                            <!-- Código sisin -->
-                                            <template v-slot:item.f2="{ item }">
-                                                <v-chip color="darkblue" dark @click="info(item)">
-                                                    %% item.f2 %%
-                                                </v-chip>
-                                            </template>
-                                            <!-- Nombre -->
-                                            <template v-slot:item.f3="{ item }">
-                                                <div style="width: 200px">
-                                                    %% item.f3 %%
-                                                </div>
-                                            </template>
-                                            <!-- Ubicación -->
-                                            <template v-slot:item.f4="{ item }">
-                                                <a href="https://www.google.com.bo/maps/@-16.528444,-68.1081294,18z?hl=es"
-                                                    target="_blank"><i class="flaticon-map-location"></i> Ver
-                                                    Ubicación</a>
-                                            </template>
-                                        </v-data-table>
-                                    </v-card>
-                                </template>
+                                    <!-- <div class="col-lg-4">
+                                        <div class="m-portlet m-portlet--mobile m-portlet--body-progress-">
+        
+                                            <div class="m-portlet__body amchart_body">
+                                                <h5>Proy. por Sector</h5>
+                                                <div id="chartdiv2"></div>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                </div>
                             </div>
                         </div>
 
@@ -449,8 +601,8 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            // navigator.serviceWorker.register('sw.js', {scope: '/prueba-seguimiento-pwa/'})
-            navigator.serviceWorker.register('sw.js', { scope: './' })
+            navigator.serviceWorker.register('sw.js', {scope: '/prueba-seguimiento-pwa/'})
+            // navigator.serviceWorker.register('sw.js', { scope: './'})
                 .then(reg => console.log('Registro de SW exitoso', reg))
                 .catch(err => console.log('Error al registrar el sw', err))
         }
