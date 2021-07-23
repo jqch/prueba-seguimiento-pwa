@@ -202,7 +202,7 @@ var vm = new Vue({
 						{ tipo: 'Saldo', monto: response.data.sumaTotalCorriente[0].saldo }
 					])
 
-					this.barchart('barchartCorriente1', this.corriente)
+					// this.barchart('barchartCorriente1', this.corriente)
         }
 			},
 
