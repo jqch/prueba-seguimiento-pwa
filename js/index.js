@@ -61,7 +61,7 @@ var vm = new Vue({
 						searchCapital: '',
 						searchCorriente: '',
 						generalOptions: {
-							view: 'table'
+							view: 'columnchart'
 						},
 						capitalOptions: {
 							view: 'columnchart'
