@@ -61,13 +61,13 @@ var vm = new Vue({
 			searchCapital: '',
 			searchCorriente: '',
 			generalOptions: {
-				view: 'table'
+				view: 'columnchart'
 			},
 			capitalOptions: {
-				view: 'table'
+				view: 'columnchart'
 			},
 			corrienteOptions: {
-				view: 'table'
+				view: 'columnchart'
 			},
 			cont: 0,
 			headers: [],
@@ -84,15 +84,13 @@ var vm = new Vue({
 
 			drawer: false,
 			group: null,
+
+			contChangeSisin: 0
 		}
 	},
 	async mounted() {
 		await this.getDependencias()
 		await this.getSigepMontos()
-
-		// await this.getDepartamentos()
-		// await this.getProjects()
-		// await this.getHeaders()
 	},
 	watch: {
 		dependencia: function () {
@@ -117,9 +115,16 @@ var vm = new Vue({
 			return value
 		},
 		changePage(newPage) {
+			if (newPage == 'SISIN' && this.contChangeSisin == 0) {
+				this.initSisin()
+				this.contChangeSisin++
+			}
 			this.page = newPage
-			document.getElementById('btn-menu').click()
+			if(window.innerWidth < 400){
+				document.getElementById('btn-menu').click()
+			}
 		},
+
 		// SIGEP
 		async getDependencias() {
 			let response = await axios.get(`${sigepUrl}/dependencias`)
@@ -182,26 +187,26 @@ var vm = new Vue({
 				this.sumaTotalCorriente = response.data.sumaTotalCorriente[0]
 
 				// General
-				// this.columnchart('chartGeneral1', this.general, ['#5a4394', '#1bb8d0'])
+				this.columnchart('chartGeneral1', this.general, ['#5a4394', '#1bb8d0'])
 				// // this.barchart('chartGeneral2', this.general)
-				// this.piechart('chartGeneral2', [
-				// 	{ tipo: 'Ejecutado', monto: response.data.totalGeneral[0].devengado },
-				// 	{ tipo: 'Saldo', monto: response.data.totalGeneral[0].saldo }
-				// ])
+				this.piechart('chartGeneral2', [
+					{ tipo: 'Ejecutado', monto: response.data.totalGeneral[0].devengado },
+					{ tipo: 'Saldo', monto: response.data.totalGeneral[0].saldo }
+				])
 
-				// // Capital
-				// this.columnchart('chartCapital1', this.sumaCapital, ['#833d90', '#f18409'])//['#4152a0','#1bb8d0'])
-				// this.piechart('chartCapital2', [
-				// 	{ tipo: 'Ejecutado', monto: response.data.sumaTotalCapital[0].devengado },
-				// 	{ tipo: 'Saldo', monto: response.data.sumaTotalCapital[0].saldo }
-				// ])
+				// Capital
+				this.columnchart('chartCapital1', this.sumaCapital, ['#833d90', '#f18409'])//['#4152a0','#1bb8d0'])
+				this.piechart('chartCapital2', [
+					{ tipo: 'Ejecutado', monto: response.data.sumaTotalCapital[0].devengado },
+					{ tipo: 'Saldo', monto: response.data.sumaTotalCapital[0].saldo }
+				])
 
-				// // Capital '#0277bd','#005432'
-				// this.columnchart('chartCorriente1', this.sumaCorriente, ['#833d90', '#f18409'])//['#5a4394','#1bb8d0'])
-				// this.piechart('chartCorriente2', [
-				// 	{ tipo: 'Ejecutado', monto: response.data.sumaTotalCorriente[0].devengado },
-				// 	{ tipo: 'Saldo', monto: response.data.sumaTotalCorriente[0].saldo }
-				// ])
+				// Capital '#0277bd','#005432'
+				this.columnchart('chartCorriente1', this.sumaCorriente, ['#833d90', '#f18409'])//['#5a4394','#1bb8d0'])
+				this.piechart('chartCorriente2', [
+					{ tipo: 'Ejecutado', monto: response.data.sumaTotalCorriente[0].devengado },
+					{ tipo: 'Saldo', monto: response.data.sumaTotalCorriente[0].saldo }
+				])
 
 				// this.barchart('barchartCorriente1', this.corriente)
 			}
@@ -472,6 +477,11 @@ var vm = new Vue({
 
 
 		// SISIN
+		async initSisin() {
+			await this.getDepartamentos()
+			await this.getProjects()
+			await this.getHeaders()
+		},
 		async getHeaders() {
 			let response = await axios.get(`${url}/catalogos`)
 			if (response.status === 200) {
