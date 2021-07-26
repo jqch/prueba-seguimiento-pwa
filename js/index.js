@@ -61,13 +61,13 @@ var vm = new Vue({
 			searchCapital: '',
 			searchCorriente: '',
 			generalOptions: {
-				view: 'columnchart'
+				view: 'table'
 			},
 			capitalOptions: {
-				view: 'columnchart'
+				view: 'table'
 			},
 			corrienteOptions: {
-				view: 'columnchart'
+				view: 'table'
 			},
 			cont: 0,
 			headers: [],
@@ -182,26 +182,26 @@ var vm = new Vue({
 				this.sumaTotalCorriente = response.data.sumaTotalCorriente[0]
 
 				// General
-				this.columnchart('chartGeneral1', this.general, ['#5a4394', '#1bb8d0'])
-				// this.barchart('chartGeneral2', this.general)
-				this.piechart('chartGeneral2', [
-					{ tipo: 'Ejecutado', monto: response.data.totalGeneral[0].devengado },
-					{ tipo: 'Saldo', monto: response.data.totalGeneral[0].saldo }
-				])
+				// this.columnchart('chartGeneral1', this.general, ['#5a4394', '#1bb8d0'])
+				// // this.barchart('chartGeneral2', this.general)
+				// this.piechart('chartGeneral2', [
+				// 	{ tipo: 'Ejecutado', monto: response.data.totalGeneral[0].devengado },
+				// 	{ tipo: 'Saldo', monto: response.data.totalGeneral[0].saldo }
+				// ])
 
-				// Capital
-				this.columnchart('chartCapital1', this.sumaCapital, ['#833d90', '#f18409'])//['#4152a0','#1bb8d0'])
-				this.piechart('chartCapital2', [
-					{ tipo: 'Ejecutado', monto: response.data.sumaTotalCapital[0].devengado },
-					{ tipo: 'Saldo', monto: response.data.sumaTotalCapital[0].saldo }
-				])
+				// // Capital
+				// this.columnchart('chartCapital1', this.sumaCapital, ['#833d90', '#f18409'])//['#4152a0','#1bb8d0'])
+				// this.piechart('chartCapital2', [
+				// 	{ tipo: 'Ejecutado', monto: response.data.sumaTotalCapital[0].devengado },
+				// 	{ tipo: 'Saldo', monto: response.data.sumaTotalCapital[0].saldo }
+				// ])
 
-				// Capital '#0277bd','#005432'
-				this.columnchart('chartCorriente1', this.sumaCorriente, ['#833d90', '#f18409'])//['#5a4394','#1bb8d0'])
-				this.piechart('chartCorriente2', [
-					{ tipo: 'Ejecutado', monto: response.data.sumaTotalCorriente[0].devengado },
-					{ tipo: 'Saldo', monto: response.data.sumaTotalCorriente[0].saldo }
-				])
+				// // Capital '#0277bd','#005432'
+				// this.columnchart('chartCorriente1', this.sumaCorriente, ['#833d90', '#f18409'])//['#5a4394','#1bb8d0'])
+				// this.piechart('chartCorriente2', [
+				// 	{ tipo: 'Ejecutado', monto: response.data.sumaTotalCorriente[0].devengado },
+				// 	{ tipo: 'Saldo', monto: response.data.sumaTotalCorriente[0].saldo }
+				// ])
 
 				// this.barchart('barchartCorriente1', this.corriente)
 			}

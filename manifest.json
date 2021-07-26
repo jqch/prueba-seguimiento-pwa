@@ -4,6 +4,7 @@
     "description": "Bienvenidos al sistema de Seguimiento de Proyectos",
     "background_color": "#2B2B2B",
     "theme_color": "#F0DB4F",
+    "orientation": "natural",
     "display": "standalone",
     "start_url": "./?utm_source=web_app_manifest",
     "scope": "./",
