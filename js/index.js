@@ -90,9 +90,9 @@ var vm = new Vue({
 		await this.getDependencias()
 		await this.getSigepMontos()
 
-		await this.getDepartamentos()
-		await this.getProjects()
-		await this.getHeaders()
+		// await this.getDepartamentos()
+		// await this.getProjects()
+		// await this.getHeaders()
 	},
 	watch: {
 		dependencia: function () {
