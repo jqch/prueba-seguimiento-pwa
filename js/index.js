@@ -231,8 +231,8 @@ var vm = new Vue({
 					"menu": [
 						{ "type": "png", "label": "PNG" },
 						{ "type": "jpg", "label": "JPG" },
-						{ "type": "xlsx", "label": "Excel" },
-						{ "type": "pdfdata", "label": "PDF" }
+						// { "type": "xlsx", "label": "Excel" },
+						// { "type": "pdfdata", "label": "PDF" }
 					]
 				}];
 				chart.exporting.filePrefix = "grafica1";
